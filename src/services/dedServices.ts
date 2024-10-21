@@ -1,85 +1,109 @@
 import axios from "axios";
 import { dedAPi } from "../api";
-import { AbilityScoreProp, AlignmentProp, BackgroundsProps, ClassesProps, ConditionsProps, DamageTypesProps, EquipmentCategoriesProps, EquipmentProps, FeatsProps, FeaturesProps, LanguagesProps, MagicItemsProps, MagicSchoolsProps } from "../types";
-
+import {
+  AbilityScoreProp,
+  AlignmentProp,
+  BackgroundsProps,
+  ClassesProps,
+  ConditionsProps,
+  DamageTypesProps,
+  EquipmentCategoriesProps,
+  EquipmentProps,
+  FeatsProps,
+  FeaturesProps,
+  LanguagesProps,
+  MagicItemsProps,
+  MagicSchoolsProps,
+  MonsterProps,
+  ProficienciesProps,
+  RaceProps,
+  RuleSectionsProps,
+  RulesProps,
+  SkillsProps,
+  SpellsProps,
+  SubClassesProps,
+  SubRacesProps,
+  TraitsProps,
+  WeaponPropertiesProps,
+} from "../types";
 
 export const dataEndPoints = {
   "ability-scores": "/api/ability-scores",
-  "alignments": "/api/alignments",
-  "backgrounds": "/api/backgrounds",
-  "classes": "/api/classes",
-  "conditions": "/api/conditions",
+  alignments: "/api/alignments",
+  backgrounds: "/api/backgrounds",
+  classes: "/api/classes",
+  conditions: "/api/conditions",
   "damage-types": "/api/damage-types",
-  "equipment": "/api/equipment",
+  equipment: "/api/equipment",
   "equipment-categories": "/api/equipment-categories",
-  "feats": "/api/feats",
-  "features": "/api/features",
-  "languages": "/api/languages",
+  feats: "/api/feats",
+  features: "/api/features",
+  languages: "/api/languages",
   "magic-items": "/api/magic-items",
   "magic-schools": "/api/magic-schools",
-  "monsters": "/api/monsters",
-  "proficiencies": "/api/proficiencies",
-  "races": "/api/races",
+  monsters: "/api/monsters",
+  proficiencies: "/api/proficiencies",
+  races: "/api/races",
   "rule-sections": "/api/rule-sections",
-  "rules": "/api/rules",
-  "skills": "/api/skills",
-  "spells": "/api/spells",
-  "subclasses": "/api/subclasses",
-  "subraces": "/api/subraces",
-  "traits": "/api/traits",
-  "weapon-properties": "/api/weapon-properties"
-}
+  rules: "/api/rules",
+  skills: "/api/skills",
+  spells: "/api/spells",
+  subclasses: "/api/subclasses",
+  subraces: "/api/subraces",
+  traits: "/api/traits",
+  "weapon-properties": "/api/weapon-properties",
+};
 
 type dataPayload = {
-  count: number
+  count: number;
   results: {
-    index: string
-    name: string
-    url: string
-  }[]
-}
+    index: string;
+    name: string;
+    url: string;
+  }[];
+};
 
 export const getData = async (propertyName: keyof typeof dataEndPoints) => {
   try {
-    const dataFromAPi = await dedAPi<dataPayload>(dataEndPoints[propertyName])
-    const { data } = dataFromAPi
+    const dataFromAPi = await dedAPi<dataPayload>(dataEndPoints[propertyName]);
+    const { data } = dataFromAPi;
 
-    console.log(data)
-    return data
-
+    return data;
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
-}
+};
 
 type UniqueDataInfoProps = {
   "ability-scores": AbilityScoreProp;
-  "alignments": AlignmentProp;
-  "backgrounds": BackgroundsProps;
-  "classes": ClassesProps;
-  "conditions": ConditionsProps;
+  alignments: AlignmentProp;
+  backgrounds: BackgroundsProps;
+  classes: ClassesProps;
+  conditions: ConditionsProps;
   "damage-types": DamageTypesProps;
-  "equipment": EquipmentProps;
+  equipment: EquipmentProps;
   "equipment-categories": EquipmentCategoriesProps;
-  "feats": FeatsProps;
-  "features": FeaturesProps;
-  "languages": LanguagesProps;
+  feats: FeatsProps;
+  features: FeaturesProps;
+  languages: LanguagesProps;
   "magic-items": MagicItemsProps;
   "magic-schools": MagicSchoolsProps;
-  "monsters": "/api/monsters";
-  "proficiencies": "/api/proficiencies";
-  "races": "/api/races";
-  "rule-sections": "/api/rule-sections";
-  "rules": "/api/rules";
-  "skills": "/api/skills";
-  "spells": "/api/spells";
-  "subclasses": "/api/subclasses";
-  "subraces": "/api/subraces";
-  "traits": "/api/traits";
-  "weapon-properties": "/api/weapon-properties"
-}
+  monsters: MonsterProps;
+  proficiencies: ProficienciesProps;
+  races: RaceProps;
+  "rule-sections": RuleSectionsProps;
+  rules: RulesProps;
+  skills: SkillsProps;
+  spells: SpellsProps;
+  subclasses: SubClassesProps;
+  subraces: SubRacesProps;
+  traits: TraitsProps;
+  "weapon-properties": WeaponPropertiesProps;
+};
 
-export const getAllDataByType = async <T extends keyof UniqueDataInfoProps>(
+export const getAllDataByPropertieName = async <
+  T extends keyof UniqueDataInfoProps
+>(
   propertyName: T
 ): Promise<UniqueDataInfoProps[T][] | undefined> => {
   try {
@@ -94,7 +118,6 @@ export const getAllDataByType = async <T extends keyof UniqueDataInfoProps>(
       ({ data }) => data
     );
 
-    console.log(`${propertyName} data:`, allDataList);
     return allDataList;
   } catch (err) {
     console.error(err);

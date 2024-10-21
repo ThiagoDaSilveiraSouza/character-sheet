@@ -1,17 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
-import { getAllDataByType } from "./services";
+// import { getAllDataByPropertieName } from "./services";
 
 function App() {
   const [count, setCount] = useState(0);
   // const { classes, setClasses } = useState();
-
-  useEffect(() => {
-    getAllDataByType("magic-schools");
-    // getAllDataByType("ability-scores");
-  });
+  // useEffect(() => {
+  //   getAllDataByPropertieName("weapon-properties");
+  //   // getAllDataByType("ability-scores");
+  // });
 
   return (
     <>
