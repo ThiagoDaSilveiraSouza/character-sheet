@@ -1,19 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
-// import { getAllDataByPropertieName } from "./services";
+import { useDataStore } from "./store";
+import { LoadingBar } from "./components";
 
 function App() {
   const [count, setCount] = useState(0);
-  // const { classes, setClasses } = useState();
-  // useEffect(() => {
-  //   getAllDataByPropertieName("weapon-properties");
-  //   // getAllDataByType("ability-scores");
-  // });
+  const { updateData, currentPropertie, loadingPercente } = useDataStore();
+
+  useEffect(() => {
+    updateData();
+    // localStorage.clear()
+  }, [updateData]);
 
   return (
     <>
+      <LoadingBar
+        percente={loadingPercente}
+        currentLoadingName={currentPropertie || ""}
+      />
+
       <div>
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />

@@ -74,37 +74,42 @@ export const getData = async (propertyName: keyof typeof dataEndPoints) => {
   }
 };
 
-type UniqueDataInfoProps = {
-  "ability-scores": AbilityScoreProp;
-  alignments: AlignmentProp;
-  backgrounds: BackgroundsProps;
-  classes: ClassesProps;
-  conditions: ConditionsProps;
-  "damage-types": DamageTypesProps;
-  equipment: EquipmentProps;
-  "equipment-categories": EquipmentCategoriesProps;
-  feats: FeatsProps;
-  features: FeaturesProps;
-  languages: LanguagesProps;
-  "magic-items": MagicItemsProps;
-  "magic-schools": MagicSchoolsProps;
-  monsters: MonsterProps;
-  proficiencies: ProficienciesProps;
-  races: RaceProps;
-  "rule-sections": RuleSectionsProps;
-  rules: RulesProps;
-  skills: SkillsProps;
-  spells: SpellsProps;
-  subclasses: SubClassesProps;
-  subraces: SubRacesProps;
-  traits: TraitsProps;
-  "weapon-properties": WeaponPropertiesProps;
+export type UniqueDataInfoProps = {
+  "ability-scores": AbilityScoreProp[];
+  alignments: AlignmentProp[];
+  backgrounds: BackgroundsProps[];
+  classes: ClassesProps[];
+  conditions: ConditionsProps[];
+  "damage-types": DamageTypesProps[];
+  equipment: EquipmentProps[];
+  "equipment-categories": EquipmentCategoriesProps[];
+  feats: FeatsProps[];
+  features: FeaturesProps[];
+  languages: LanguagesProps[];
+  "magic-items": MagicItemsProps[];
+  "magic-schools": MagicSchoolsProps[];
+  monsters: MonsterProps[];
+  proficiencies: ProficienciesProps[];
+  races: RaceProps[];
+  "rule-sections": RuleSectionsProps[];
+  rules: RulesProps[];
+  skills: SkillsProps[];
+  spells: SpellsProps[];
+  subclasses: SubClassesProps[];
+  subraces: SubRacesProps[];
+  traits: TraitsProps[];
+  "weapon-properties": WeaponPropertiesProps[];
 };
 
+const getAllDataByPropertieNameConfig = {
+  currentAttemp: 0,
+  maxAttemps: 3
+}
 export const getAllDataByPropertieName = async <
   T extends keyof UniqueDataInfoProps
 >(
-  propertyName: T
+  propertyName: T,
+  config = getAllDataByPropertieNameConfig
 ): Promise<UniqueDataInfoProps[T][] | undefined> => {
   try {
     const allDataFromApi = await getData(propertyName);
@@ -120,6 +125,17 @@ export const getAllDataByPropertieName = async <
 
     return allDataList;
   } catch (err) {
+    const updatedConfig = {
+      ...config,
+      currentAttemp: config.currentAttemp + 1
+    }
+    const hasAttemp = updatedConfig.currentAttemp <= updatedConfig.maxAttemps
+
+    if (hasAttemp) {
+      console.log("Tentando carregar novamente a propriedade: ", propertyName)
+      console.error(err)
+      await getAllDataByPropertieName(propertyName, updatedConfig)
+    }
     console.error(err);
   }
 };
