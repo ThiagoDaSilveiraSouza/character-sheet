@@ -5,6 +5,9 @@ const LoadingBarComponent = styled.div`
   justify-content: center;
   flex-wrap: wrap;
   width: 300px;
+  p {
+    color: black;
+  }
 `;
 
 const Bar = styled.div`
@@ -49,11 +52,11 @@ export const LoadingBar = ({
 }: LoadingBarProps) => {
   return (
     <LoadingBarComponent>
-      <p>Carregando {currentLoadingName}...</p>
       <Bar>
         <BackgroundCharge $widthpercent={percente} />
         {Math.round(percente)}%
       </Bar>
+      <p>Carregando {currentLoadingName}...</p>
     </LoadingBarComponent>
   );
 };
