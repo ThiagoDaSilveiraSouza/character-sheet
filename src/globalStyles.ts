@@ -39,7 +39,8 @@ const GlobalStyle = createGlobalStyle`
     font-family: ${theme.fonts.main};
     background-color: ${theme.colors.background.light};
     color: ${theme.colors.text.primary};
-    padding-left: 60px; // Adicionado para evitar sobreposição com o botão do menu
+    box-sizing: border-box;
+    padding-top: 50px; // Adicionando padding ao topo
   }
 
   ol, ul {
@@ -66,6 +67,15 @@ const GlobalStyle = createGlobalStyle`
     border: none;
     background: none;
     cursor: pointer;
+    padding: 3px 6px; /* Reduzindo o padding padrão */
+  }
+
+  button:focus,
+  button:active,
+  button:hover,
+  button:checked,
+  button:focus-visible {
+    outline: none;
   }
 
   /* Estilo global para barras de rolagem */

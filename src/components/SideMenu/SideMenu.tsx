@@ -24,12 +24,13 @@ const MenuToggle = styled.button<{ $isOpen: boolean }>`
   color: ${({ $isOpen }) => $isOpen ? theme.colors.text.light : theme.colors.primary};
   font-size: 24px;
   cursor: pointer;
-  z-index: 1001;
+  z-index: 1003;
   padding: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
   outline: none;
+  margin: 10px;
   transition: color 0.3s ease-in-out;
 
   &:focus {
@@ -70,7 +71,7 @@ const MenuLink = styled(Link)`
 
   &:hover {
     background-color: ${theme.colors.primaryHover};
-    color: ${theme.colors.text.light}; // Mantém a cor do texto clara ao passar o mouse
+    color: ${theme.colors.text.light};
   }
 `;
 

@@ -99,14 +99,15 @@ export const SpellCount = styled.span`
 `;
 
 export const ToggleButton = styled.button`
-  background: none;
-  border: none;
   color: ${theme.colors.primary};
-  cursor: pointer;
   font-size: 1.2em;
-  padding: 0;
+  padding: 2px;
   display: flex;
   align-items: center;
+
+  &:focus, &:active, &:focus-visible {
+    outline: none;
+  }
 `;
 
 export const SpellListCardContainer = styled.div<{ $isOpen: boolean }>`

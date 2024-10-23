@@ -4,8 +4,9 @@ import styled from "styled-components";
 import { useCharacterStore } from "../../store/characterStore";
 import { theme } from "../../styles/theme";
 import { CharacterSheet as CharacterSheetType } from "../../types/characterSheet";
-import { FaChevronDown, FaChevronUp, FaSave } from "react-icons/fa";
-
+import { FaSave } from "react-icons/fa";
+import { CollapsibleCard } from "../../components/CollapsibleCard/CollapsibleCard";
+// import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 const PageContainer = styled.div`
   color: ${theme.colors.text.primary};
   max-width: 1000px;
@@ -15,6 +16,11 @@ const PageContainer = styled.div`
   flex-direction: column;
   overflow: hidden;
   padding: 20px;
+  box-sizing: border-box;
+
+  @media (max-width: 320px) {
+    padding: 10px;
+  }
 `;
 
 const HeaderContainer = styled.div`
@@ -26,6 +32,13 @@ const HeaderContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-sizing: border-box;
+
+  @media (max-width: 320px) {
+    padding: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
 const ContentWrapper = styled.div`
@@ -39,23 +52,31 @@ const ContentWrapper = styled.div`
 const PageTitle = styled.h1`
   color: ${theme.colors.primary};
   font-size: 2em;
+
+  @media (max-width: 320px) {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+  }
 `;
 
 const SaveButton = styled.button`
   background-color: ${theme.colors.primary};
   color: ${theme.colors.text.light};
-  padding: 10px;
-  border: none;
+  padding: 5px 8px;
   border-radius: 5px;
-  cursor: pointer;
   font-size: ${theme.fontSizes.medium};
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background-color 0.3s ease;
+  gap: 5px;
 
   &:hover {
     background-color: ${theme.colors.primaryHover};
+  }
+
+  &:focus, &:active, &:focus-visible {
+    outline: none;
   }
 `;
 
@@ -64,6 +85,10 @@ const ScrollableContent = styled.div`
   overflow-y: auto;
   padding: 20px;
   box-sizing: border-box;
+
+  @media (max-width: 320px) {
+    padding: 10px;
+  }
 `;
 
 const Form = styled.form`
@@ -72,68 +97,98 @@ const Form = styled.form`
   gap: 20px;
 `;
 
-const FormSection = styled.div<{ $isOpen: boolean }>`
-  background-color: ${theme.colors.background.light};
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-`;
+// const FormSection = styled.div<{ $isOpen: boolean }>`
+//   background-color: ${theme.colors.background.light};
+//   padding: 20px;
+//   border-radius: 8px;
+//   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+//   width: 100%;
+//   max-width: 600px;
+//   transition: all 0.3s ease-in-out;
+//   overflow: hidden;
+// `;
 
-const SectionContent = styled.div<{ $isOpen: boolean }>`
-  display: ${(props) => (props.$isOpen ? "flex" : "none")};
-  flex-direction: column;
-  gap: 10px;
-  overflow: hidden;
-  transition: max-height 0.3s ease-in-out;
-  max-height: ${(props) => (props.$isOpen ? "1000px" : "0")};
-`;
+// const SectionContent = styled.div<{ $isOpen: boolean }>`
+//   display: flex;
+//   flex-direction: column;
+//   gap: 10px;
+//   max-height: ${(props) => (props.$isOpen ? "1000px" : "0")};
+//   opacity: ${(props) => (props.$isOpen ? "1" : "0")};
+//   transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+// `;
 
-const SectionHeader = styled.div`
+// const SectionHeader = styled.div`
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   cursor: pointer;
+// `;
+
+// const SectionTitle = styled.h2`
+//   color: ${theme.colors.primary};
+//   font-size: 1.5em;
+//   margin-bottom: 20px; // Aumentado o espaçamento aqui
+// `;
+
+// const ToggleButton = styled.button`
+//   color: ${theme.colors.primary};
+//   font-size: 1.2em;
+//   padding: 2px;
+//   display: flex;
+//   align-items: center;
+//   gap: 3px;
+
+//   &:focus, &:active, &:focus-visible {
+//     outline: none;
+//   }
+// `;
+
+const InputGroup = styled.div<{ $fullWidth?: boolean }>`
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  cursor: pointer;
-`;
+  margin-bottom: 15px;
+  width: 100%;
+  ${props => props.$fullWidth && `
+    flex-direction: column;
+    align-items: flex-start;
+  `}
 
-const SectionTitle = styled.h2`
-  color: ${theme.colors.primary};
-  font-size: 1.5em;
-  margin-bottom: 10px;
-`;
-
-const ToggleButton = styled.button`
-  background: none;
-  border: none;
-  color: ${theme.colors.primary};
-  font-size: 1.2em;
-  cursor: pointer;
-`;
-
-const InputGroup = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
+  @media (max-width: 320px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
 const Label = styled.label`
   font-weight: bold;
   color: ${theme.colors.text.secondary};
   width: 150px;
+  text-align: left;
+
+  @media (max-width: 320px) {
+    width: 100%;
+    margin-bottom: 5px;
+  }
 `;
 
-const Input = styled.input`
+const Input = styled.input<{ $fullWidth?: boolean }>`
   padding: 5px;
   font-size: ${theme.fontSizes.medium};
   border: 1px solid ${theme.colors.primary};
   border-radius: 4px;
   background-color: ${theme.colors.background.light};
   color: ${theme.colors.text.primary};
-  width: 60px;
+  width: ${props => props.$fullWidth ? '100%' : '60px'};
+  box-sizing: border-box;
 
   &:focus {
     outline: none;
     border-color: ${theme.colors.primaryHover};
     box-shadow: 0 0 0 2px ${theme.colors.primaryHover}33;
+  }
+
+  @media (max-width: 320px) {
+    width: 100%;
   }
 `;
 
@@ -144,6 +199,8 @@ const Select = styled.select`
   border-radius: 4px;
   background-color: ${theme.colors.background.light};
   color: ${theme.colors.text.primary};
+  width: 100%;
+  box-sizing: border-box;
 
   &:focus {
     outline: none;
@@ -161,6 +218,8 @@ const TextArea = styled.textarea`
   color: ${theme.colors.text.primary};
   min-height: 100px;
   resize: vertical;
+  width: 100%;
+  box-sizing: border-box;
 
   &:focus {
     outline: none;
@@ -257,407 +316,363 @@ export const CharacterSheet: React.FC = () => {
     <PageContainer>
       <HeaderContainer>
         <PageTitle>Ficha de {character.name}</PageTitle>
-        <SaveButton onClick={handleSubmit}>
+        <SaveButton onClick={handleSubmit} type="button">
           <FaSave />
+          Salvar
         </SaveButton>
       </HeaderContainer>
       <ContentWrapper>
         <ScrollableContent>
           <Form onSubmit={handleSubmit}>
-            <FormSection $isOpen={openSection === "basicInfo"}>
-              <SectionHeader onClick={() => toggleSection("basicInfo")}>
-                <SectionTitle>Informações Básicas</SectionTitle>
-                <ToggleButton type="button">
-                  {openSection === "basicInfo" ? (
-                    <FaChevronUp />
-                  ) : (
-                    <FaChevronDown />
-                  )}
-                </ToggleButton>
-              </SectionHeader>
-              <SectionContent $isOpen={openSection === "basicInfo"}>
-                <InputGroup>
-                  <Label htmlFor="name">Nome</Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    value={character.name}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="class">Classe</Label>
-                  <Select
-                    id="class"
-                    name="class"
-                    value={character.class}
-                    onChange={handleChange}
-                  >
-                    <option value="">Selecione uma classe</option>
-                    {classes.map((className) => (
-                      <option key={className} value={className}>
-                        {className}
-                      </option>
-                    ))}
-                  </Select>
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="level">Nível</Label>
-                  <Input
-                    id="level"
-                    type="number"
-                    name="level"
-                    value={character.level}
-                    onChange={handleChange}
-                    min="1"
-                    max="20"
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="background">Antecedente</Label>
-                  <Input
-                    id="background"
-                    name="background"
-                    value={character.background}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="race">Raça</Label>
-                  <Input
-                    id="race"
-                    name="race"
-                    value={character.race}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="alignment">Alinhamento</Label>
-                  <Select
-                    id="alignment"
-                    name="alignment"
-                    value={character.alignment}
-                    onChange={handleChange}
-                  >
-                    <option value="">Selecione...</option>
-                    <option value="LG">Leal e Bom</option>
-                    <option value="NG">Neutro e Bom</option>
-                    <option value="CG">Caótico e Bom</option>
-                    <option value="LN">Leal e Neutro</option>
-                    <option value="TN">Totalmente Neutro</option>
-                    <option value="CN">Caótico e Neutro</option>
-                    <option value="LE">Leal e Mau</option>
-                    <option value="NE">Neutro e Mau</option>
-                    <option value="CE">Caótico e Mau</option>
-                  </Select>
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="experiencePoints">
-                    Pontos de Experiência
-                  </Label>
-                  <Input
-                    id="experiencePoints"
-                    type="number"
-                    name="experiencePoints"
-                    value={character.experiencePoints}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-              </SectionContent>
-            </FormSection>
-
-            <FormSection $isOpen={openSection === "attributes"}>
-              <SectionHeader onClick={() => toggleSection("attributes")}>
-                <SectionTitle>Atributos</SectionTitle>
-                <ToggleButton type="button">
-                  {openSection === "attributes" ? (
-                    <FaChevronUp />
-                  ) : (
-                    <FaChevronDown />
-                  )}
-                </ToggleButton>
-              </SectionHeader>
-              <SectionContent $isOpen={openSection === "attributes"}>
-                <InputGroup>
-                  <Label htmlFor="strength">Força</Label>
-                  <Input
-                    id="strength"
-                    type="number"
-                    name="strength"
-                    value={character.strength}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="dexterity">Destreza</Label>
-                  <Input
-                    id="dexterity"
-                    type="number"
-                    name="dexterity"
-                    value={character.dexterity}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="constitution">Constituição</Label>
-                  <Input
-                    id="constitution"
-                    type="number"
-                    name="constitution"
-                    value={character.constitution}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="intelligence">Inteligência</Label>
-                  <Input
-                    id="intelligence"
-                    type="number"
-                    name="intelligence"
-                    value={character.intelligence}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="wisdom">Sabedoria</Label>
-                  <Input
-                    id="wisdom"
-                    type="number"
-                    name="wisdom"
-                    value={character.wisdom}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="charisma">Carisma</Label>
-                  <Input
-                    id="charisma"
-                    type="number"
-                    name="charisma"
-                    value={character.charisma}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-              </SectionContent>
-            </FormSection>
-
-            <FormSection $isOpen={openSection === "combatStats"}>
-              <SectionHeader onClick={() => toggleSection("combatStats")}>
-                <SectionTitle>Estatísticas de Combate</SectionTitle>
-                <ToggleButton type="button">
-                  {openSection === "combatStats" ? (
-                    <FaChevronUp />
-                  ) : (
-                    <FaChevronDown />
-                  )}
-                </ToggleButton>
-              </SectionHeader>
-              <SectionContent $isOpen={openSection === "combatStats"}>
-                <InputGroup>
-                  <Label htmlFor="armorClass">Classe de Armadura</Label>
-                  <Input
-                    id="armorClass"
-                    type="number"
-                    name="armorClass"
-                    value={character.armorClass}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="initiative">Iniciativa</Label>
-                  <Input
-                    id="initiative"
-                    type="number"
-                    name="initiative"
-                    value={character.initiative}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="speed">Deslocamento</Label>
-                  <Input
-                    id="speed"
-                    name="speed"
-                    value={character.speed}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="hitPointMaximum">
-                    Pontos de Vida Máximos
-                  </Label>
-                  <Input
-                    id="hitPointMaximum"
-                    type="number"
-                    name="hitPointMaximum"
-                    value={character.hitPointMaximum}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="currentHitPoints">
-                    Pontos de Vida Atuais
-                  </Label>
-                  <Input
-                    id="currentHitPoints"
-                    type="number"
-                    name="currentHitPoints"
-                    value={character.currentHitPoints}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="temporaryHitPoints">
-                    Pontos de Vida Temporários
-                  </Label>
-                  <Input
-                    id="temporaryHitPoints"
-                    type="number"
-                    name="temporaryHitPoints"
-                    value={character.temporaryHitPoints}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label htmlFor="hitDice">Dados de Vida</Label>
-                  <Input
-                    id="hitDice"
-                    name="hitDice"
-                    value={character.hitDice}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-              </SectionContent>
-            </FormSection>
-
-            <FormSection $isOpen={openSection === "skills"}>
-              <SectionHeader onClick={() => toggleSection("skills")}>
-                <SectionTitle>Perícias</SectionTitle>
-                <ToggleButton type="button">
-                  {openSection === "skills" ? (
-                    <FaChevronUp />
-                  ) : (
-                    <FaChevronDown />
-                  )}
-                </ToggleButton>
-              </SectionHeader>
-              <SectionContent $isOpen={openSection === "skills"}>
-                {skills.map((skill) => (
-                  <InputGroup key={skill}>
-                    <Label htmlFor={skill}>{skill}</Label>
-                    <Input
-                      id={skill}
-                      type="number"
-                      name={`skills.${skill}`}
-                      value={character.skills?.[skill] || 0}
-                      onChange={handleChange}
-                    />
-                  </InputGroup>
-                ))}
-              </SectionContent>
-            </FormSection>
-
-            <FormSection $isOpen={openSection === "characteristics"}>
-              <SectionHeader onClick={() => toggleSection("characteristics")}>
-                <SectionTitle>Características</SectionTitle>
-                <ToggleButton type="button">
-                  {openSection === "characteristics" ? (
-                    <FaChevronUp />
-                  ) : (
-                    <FaChevronDown />
-                  )}
-                </ToggleButton>
-              </SectionHeader>
-              <SectionContent $isOpen={openSection === "characteristics"}>
-                <Label htmlFor="personalityTraits">
-                  Traços de Personalidade
+            <CollapsibleCard
+              title="Informações Básicas"
+              isOpen={openSection === "basicInfo"}
+              onToggle={() => toggleSection("basicInfo")}
+            >
+              <InputGroup $fullWidth>
+                <Label htmlFor="name">Nome</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={character.name}
+                  onChange={handleChange}
+                  $fullWidth
+                />
+              </InputGroup>
+              <InputGroup $fullWidth>
+                <Label htmlFor="class">Classe</Label>
+                <Select
+                  id="class"
+                  name="class"
+                  value={character.class}
+                  onChange={handleChange}
+                >
+                  <option value="">Selecione uma classe</option>
+                  {classes.map((className) => (
+                    <option key={className} value={className}>
+                      {className}
+                    </option>
+                  ))}
+                </Select>
+              </InputGroup>
+              <InputGroup $fullWidth>
+                <Label htmlFor="level">Nível</Label>
+                <Input
+                  id="level"
+                  type="number"
+                  name="level"
+                  value={character.level}
+                  onChange={handleChange}
+                  min="1"
+                  max="20"
+                  $fullWidth
+                />
+              </InputGroup>
+              <InputGroup $fullWidth>
+                <Label htmlFor="background">Antecedente</Label>
+                <Input
+                  id="background"
+                  name="background"
+                  value={character.background}
+                  onChange={handleChange}
+                  $fullWidth
+                />
+              </InputGroup>
+              <InputGroup $fullWidth>
+                <Label htmlFor="race">Raça</Label>
+                <Input
+                  id="race"
+                  name="race"
+                  value={character.race}
+                  onChange={handleChange}
+                  $fullWidth
+                />
+              </InputGroup>
+              <InputGroup $fullWidth>
+                <Label htmlFor="alignment">Alinhamento</Label>
+                <Select
+                  id="alignment"
+                  name="alignment"
+                  value={character.alignment}
+                  onChange={handleChange}
+                >
+                  <option value="">Selecione...</option>
+                  <option value="LG">Leal e Bom</option>
+                  <option value="NG">Neutro e Bom</option>
+                  <option value="CG">Caótico e Bom</option>
+                  <option value="LN">Leal e Neutro</option>
+                  <option value="TN">Totalmente Neutro</option>
+                  <option value="CN">Caótico e Neutro</option>
+                  <option value="LE">Leal e Mau</option>
+                  <option value="NE">Neutro e Mau</option>
+                  <option value="CE">Caótico e Mau</option>
+                </Select>
+              </InputGroup>
+              <InputGroup $fullWidth>
+                <Label htmlFor="experiencePoints">
+                  Pontos de Experiência
                 </Label>
-                <TextArea
-                  id="personalityTraits"
-                  name="personalityTraits"
-                  value={character.personalityTraits}
+                <Input
+                  id="experiencePoints"
+                  type="number"
+                  name="experiencePoints"
+                  value={character.experiencePoints}
+                  onChange={handleChange}
+                  $fullWidth
+                />
+              </InputGroup>
+            </CollapsibleCard>
+
+            <CollapsibleCard
+              title="Atributos"
+              isOpen={openSection === "attributes"}
+              onToggle={() => toggleSection("attributes")}
+            >
+              <InputGroup>
+                <Label htmlFor="strength">Força</Label>
+                <Input
+                  id="strength"
+                  type="number"
+                  name="strength"
+                  value={character.strength}
                   onChange={handleChange}
                 />
-
-                <Label htmlFor="ideals">Ideais</Label>
-                <TextArea
-                  id="ideals"
-                  name="ideals"
-                  value={character.ideals}
+              </InputGroup>
+              <InputGroup>
+                <Label htmlFor="dexterity">Destreza</Label>
+                <Input
+                  id="dexterity"
+                  type="number"
+                  name="dexterity"
+                  value={character.dexterity}
                   onChange={handleChange}
                 />
-
-                <Label htmlFor="bonds">Vínculos</Label>
-                <TextArea
-                  id="bonds"
-                  name="bonds"
-                  value={character.bonds}
+              </InputGroup>
+              <InputGroup>
+                <Label htmlFor="constitution">Constituição</Label>
+                <Input
+                  id="constitution"
+                  type="number"
+                  name="constitution"
+                  value={character.constitution}
                   onChange={handleChange}
                 />
-
-                <Label htmlFor="flaws">Fraquezas</Label>
-                <TextArea
-                  id="flaws"
-                  name="flaws"
-                  value={character.flaws}
+              </InputGroup>
+              <InputGroup>
+                <Label htmlFor="intelligence">Inteligência</Label>
+                <Input
+                  id="intelligence"
+                  type="number"
+                  name="intelligence"
+                  value={character.intelligence}
                   onChange={handleChange}
                 />
-              </SectionContent>
-            </FormSection>
+              </InputGroup>
+              <InputGroup>
+                <Label htmlFor="wisdom">Sabedoria</Label>
+                <Input
+                  id="wisdom"
+                  type="number"
+                  name="wisdom"
+                  value={character.wisdom}
+                  onChange={handleChange}
+                />
+              </InputGroup>
+              <InputGroup>
+                <Label htmlFor="charisma">Carisma</Label>
+                <Input
+                  id="charisma"
+                  type="number"
+                  name="charisma"
+                  value={character.charisma}
+                  onChange={handleChange}
+                />
+              </InputGroup>
+            </CollapsibleCard>
 
-            <FormSection $isOpen={openSection === "abilitiesAndEquipment"}>
-              <SectionHeader
-                onClick={() => toggleSection("abilitiesAndEquipment")}
-              >
-                <SectionTitle>Habilidades e Equipamentos</SectionTitle>
-                <ToggleButton type="button">
-                  {openSection === "abilitiesAndEquipment" ? (
-                    <FaChevronUp />
-                  ) : (
-                    <FaChevronDown />
-                  )}
-                </ToggleButton>
-              </SectionHeader>
-              <SectionContent $isOpen={openSection === "abilitiesAndEquipment"}>
-                <Label htmlFor="featuresAndTraits">
-                  Características e Talentos
+            <CollapsibleCard
+              title="Estatísticas de Combate"
+              isOpen={openSection === "combatStats"}
+              onToggle={() => toggleSection("combatStats")}
+            >
+              <InputGroup>
+                <Label htmlFor="armorClass">Classe de Armadura</Label>
+                <Input
+                  id="armorClass"
+                  type="number"
+                  name="armorClass"
+                  value={character.armorClass}
+                  onChange={handleChange}
+                />
+              </InputGroup>
+              <InputGroup>
+                <Label htmlFor="initiative">Iniciativa</Label>
+                <Input
+                  id="initiative"
+                  type="number"
+                  name="initiative"
+                  value={character.initiative}
+                  onChange={handleChange}
+                />
+              </InputGroup>
+              <InputGroup>
+                <Label htmlFor="speed">Deslocamento</Label>
+                <Input
+                  id="speed"
+                  name="speed"
+                  value={character.speed}
+                  onChange={handleChange}
+                />
+              </InputGroup>
+              <InputGroup>
+                <Label htmlFor="hitPointMaximum">
+                  Pontos de Vida Máximos
                 </Label>
-                <TextArea
-                  id="featuresAndTraits"
-                  name="featuresAndTraits"
-                  value={character.featuresAndTraits}
+                <Input
+                  id="hitPointMaximum"
+                  type="number"
+                  name="hitPointMaximum"
+                  value={character.hitPointMaximum}
                   onChange={handleChange}
                 />
-
-                <Label htmlFor="otherProficienciesAndLanguages">
-                  Outras Proficiências e Idiomas
+              </InputGroup>
+              <InputGroup>
+                <Label htmlFor="currentHitPoints">
+                  Pontos de Vida Atuais
                 </Label>
-                <TextArea
-                  id="otherProficienciesAndLanguages"
-                  name="otherProficienciesAndLanguages"
-                  value={character.otherProficienciesAndLanguages}
+                <Input
+                  id="currentHitPoints"
+                  type="number"
+                  name="currentHitPoints"
+                  value={character.currentHitPoints}
                   onChange={handleChange}
                 />
-
-                <Label htmlFor="equipment">Equipamento</Label>
-                <TextArea
-                  id="equipment"
-                  name="equipment"
-                  value={character.equipment}
-                  onChange={handleChange}
-                />
-
-                <Label htmlFor="attacksAndSpellcasting">
-                  Ataques e Conjuração
+              </InputGroup>
+              <InputGroup>
+                <Label htmlFor="temporaryHitPoints">
+                  Pontos de Vida Temporários
                 </Label>
-                <TextArea
-                  id="attacksAndSpellcasting"
-                  name="attacksAndSpellcasting"
-                  value={character.attacksAndSpellcasting}
+                <Input
+                  id="temporaryHitPoints"
+                  type="number"
+                  name="temporaryHitPoints"
+                  value={character.temporaryHitPoints}
                   onChange={handleChange}
                 />
-              </SectionContent>
-            </FormSection>
+              </InputGroup>
+              <InputGroup>
+                <Label htmlFor="hitDice">Dados de Vida</Label>
+                <Input
+                  id="hitDice"
+                  name="hitDice"
+                  value={character.hitDice}
+                  onChange={handleChange}
+                />
+              </InputGroup>
+            </CollapsibleCard>
+
+            <CollapsibleCard
+              title="Perícias"
+              isOpen={openSection === "skills"}
+              onToggle={() => toggleSection("skills")}
+            >
+              {skills.map((skill) => (
+                <InputGroup key={skill}>
+                  <Label htmlFor={skill}>{skill}</Label>
+                  <Input
+                    id={skill}
+                    type="number"
+                    name={`skills.${skill}`}
+                    value={character.skills?.[skill] || 0}
+                    onChange={handleChange}
+                  />
+                </InputGroup>
+              ))}
+            </CollapsibleCard>
+
+            <CollapsibleCard
+              title="Características"
+              isOpen={openSection === "characteristics"}
+              onToggle={() => toggleSection("characteristics")}
+            >
+              <Label htmlFor="personalityTraits">
+                Traços de Personalidade
+              </Label>
+              <TextArea
+                id="personalityTraits"
+                name="personalityTraits"
+                value={character.personalityTraits}
+                onChange={handleChange}
+              />
+
+              <Label htmlFor="ideals">Ideais</Label>
+              <TextArea
+                id="ideals"
+                name="ideals"
+                value={character.ideals}
+                onChange={handleChange}
+              />
+
+              <Label htmlFor="bonds">Vínculos</Label>
+              <TextArea
+                id="bonds"
+                name="bonds"
+                value={character.bonds}
+                onChange={handleChange}
+              />
+
+              <Label htmlFor="flaws">Fraquezas</Label>
+              <TextArea
+                id="flaws"
+                name="flaws"
+                value={character.flaws}
+                onChange={handleChange}
+              />
+            </CollapsibleCard>
+
+            <CollapsibleCard
+              title="Habilidades e Equipamentos"
+              isOpen={openSection === "abilitiesAndEquipment"}
+              onToggle={() => toggleSection("abilitiesAndEquipment")}
+            >
+              <Label htmlFor="featuresAndTraits">
+                Características e Talentos
+              </Label>
+              <TextArea
+                id="featuresAndTraits"
+                name="featuresAndTraits"
+                value={character.featuresAndTraits}
+                onChange={handleChange}
+              />
+
+              <Label htmlFor="otherProficienciesAndLanguages">
+                Outras Proficiências e Idiomas
+              </Label>
+              <TextArea
+                id="otherProficienciesAndLanguages"
+                name="otherProficienciesAndLanguages"
+                value={character.otherProficienciesAndLanguages}
+                onChange={handleChange}
+              />
+
+              <Label htmlFor="equipment">Equipamento</Label>
+              <TextArea
+                id="equipment"
+                name="equipment"
+                value={character.equipment}
+                onChange={handleChange}
+              />
+
+              <Label htmlFor="attacksAndSpellcasting">
+                Ataques e Conjuração
+              </Label>
+              <TextArea
+                id="attacksAndSpellcasting"
+                name="attacksAndSpellcasting"
+                value={character.attacksAndSpellcasting}
+                onChange={handleChange}
+              />
+            </CollapsibleCard>
           </Form>
         </ScrollableContent>
       </ContentWrapper>
