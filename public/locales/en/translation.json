@@ -1,0 +1,11 @@
+{
+  "common": {
+    "backToHome": "Home"
+  },
+  "spellPage": {
+    "title": "Spells",
+    "filterByLevel": "Filter by Level",
+    "filterByClass": "Filter by Class",
+    "level": "Level"
+  }
+}

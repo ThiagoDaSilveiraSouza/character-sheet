@@ -1,98 +1,93 @@
-import { useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useDataStore } from "../../store";
 
 export const SpellPageHook = () => {
   const { data } = useDataStore();
   const { spells } = data;
-  const [levelList, setLevelList] = useState<number[]>([0])
-  const [classList, setClassList] = useState<string[]>(["Bard"])
-  const levelIndexList = Array(10)
-    .fill("")
-    .map((_, index) => index)
+  const [checkedLevelList, setCheckedLevelList] = useState<number[]>([]);
+  const [checkedClassList, setCheckedClassList] = useState<string[]>([]);
 
-  const toggleLevelList = (targetLevel: number) => {
-    setLevelList((prevLevelList) => {
-      const updatedState = [...prevLevelList]
-      const hasTargetLevel = updatedState.some((currentLevel) => currentLevel === targetLevel)
+  const levelIndexList = useMemo(() => 
+    Array(10).fill("").map((_, index) => index),
+    []
+  );
 
-      if (hasTargetLevel) {
-        const levelListWithoutTargetLevel = updatedState.filter((currentLevel) => currentLevel !== targetLevel)
-        return levelListWithoutTargetLevel
+  const classList = useMemo(() => {
+    const classSet = new Set<string>();
+    spells?.forEach(spell => {
+      spell.classes.forEach(spellClass => {
+        classSet.add(spellClass.name);
+      });
+    });
+    return Array.from(classSet).sort();
+  }, [spells]);
+
+  const toggleLevelList = (targetLevel: number, checked: boolean) => {
+    setCheckedLevelList((prevLevelList) => {
+      const setList = new Set([...prevLevelList]);
+      if (checked) {
+        setList.add(targetLevel);
+      } else {
+        setList.delete(targetLevel);
       }
+      return Array.from(setList);
+    });
+  };
 
-      updatedState.push(targetLevel)
-
-      return updatedState
-    })
-  }
-
-
-
-  const toggleClassList = (targetClasse: string) => {
-    setClassList((prevClassList) => {
-      const updatedState = [...prevClassList]
-      const hasTargetLevel = updatedState.some((currentClass) => currentClass === targetClasse)
-
-      if (hasTargetLevel) {
-        const levelListWithoutTargetClass = updatedState.filter((currentClass) => currentClass !== targetClasse)
-        return levelListWithoutTargetClass
+  const toggleClassList = (targetClass: string) => {
+    setCheckedClassList((prevClassList) => {
+      if (prevClassList.includes(targetClass)) {
+        return prevClassList.filter((currentClass) => currentClass !== targetClass);
       }
-
-      updatedState.push(targetClasse)
-
-      return updatedState
-    })
-  }
-
-
+      return [...prevClassList, targetClass];
+    });
+  };
 
   const filterListByLevel = (spellsList: typeof spells) => {
-    const notHasFilters = levelList.length === 0
-
-    if (notHasFilters) {
-      return spellsList
-    }
-
-    return spellsList?.filter((currentSpell) => {
-
-      const { level } = currentSpell
-      const hasCurrentLevel = levelList.some((currentLevel) => currentLevel === level)
-      return hasCurrentLevel
-    })
-  }
+    if (checkedLevelList.length === 0) return spellsList;
+    return spellsList?.filter((currentSpell) => 
+      checkedLevelList.includes(currentSpell.level)
+    );
+  };
 
   const filterByClass = (spellsList: typeof spells) => {
-    const notHasFilters = classList.length === 0
-
-    if (notHasFilters) {
-      return spellsList
-    }
-
-    return spellsList?.filter((currentSpell) => {
-      const hasCurrentClass = classList.some((currentClass) => currentSpell.classes.some((currentCLassFromCurrentSpell) => currentCLassFromCurrentSpell.name === currentClass))
-
-      return hasCurrentClass
-    })
-  }
+    if (checkedClassList.length === 0) return spellsList;
+    return spellsList?.filter((currentSpell) => 
+      currentSpell.classes.some((spellClass) => 
+        checkedClassList.includes(spellClass.name)
+      )
+    );
+  };
 
   const filterSpell = (spellsList: typeof spells) => {
-    const filterList = [filterListByLevel, filterByClass]
-    const filterdSpells = filterList.reduce((filteredSpells, currentFilter) => currentFilter(filteredSpells), spellsList)
-    return filterdSpells
-  }
+    return [filterListByLevel, filterByClass].reduce(
+      (filteredSpells, currentFilter) => currentFilter(filteredSpells),
+      spellsList
+    );
+  };
 
-  const filteredSpells = filterSpell(spells)
+  const filteredSpells = useMemo(() => filterSpell(spells), [spells, checkedLevelList, checkedClassList]);
 
-  const spellsBySchool = filteredSpells?.reduce((spellsBySchool, currentSpell) => {
-    const { school } = currentSpell;
-    const updatedSpellsBySchool = { ...spellsBySchool };
-    const schoolName = school.name as keyof typeof updatedSpellsBySchool;
-    updatedSpellsBySchool[schoolName] = updatedSpellsBySchool[schoolName] || [];
+  const spellsBySchool = useMemo(() => {
+    return filteredSpells?.reduce((acc, currentSpell) => {
+      const { school } = currentSpell;
+      const schoolName = school.name;
+      acc[schoolName] = acc[schoolName] || [];
+      acc[schoolName].push(currentSpell);
+      return acc;
+    }, {} as { [key: string]: typeof spells });
+  }, [filteredSpells]);
 
-    updatedSpellsBySchool[schoolName].push(currentSpell);
-    return updatedSpellsBySchool;
-  }, {} as { [key: string]: typeof spells });
+  useEffect(() => {
+    console.log("levelList", checkedLevelList);
+  }, [checkedLevelList]);
 
-
-  return { spells, spellsBySchool, toggleLevelList, toggleClassList, levelIndexList }
-}
+  return { 
+    spellsBySchool, 
+    levelIndexList, 
+    toggleLevelList, 
+    classList, 
+    checkedClassList,
+    toggleClassList 
+  };
+};

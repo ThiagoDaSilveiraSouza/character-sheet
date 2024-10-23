@@ -1,0 +1,11 @@
+{
+  "common": {
+    "backToHome": "Início"
+  },
+  "spellPage": {
+    "title": "Magias",
+    "filterByLevel": "Filtrar por Nível",
+    "filterByClass": "Filtrar por Classe",
+    "level": "Nível"
+  }
+}

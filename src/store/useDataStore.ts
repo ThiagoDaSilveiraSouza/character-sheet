@@ -57,7 +57,7 @@ export const useDataStore = create<UseDataStoreProps>((set) => {
               [currentPropertieName]: dataFromLocalStorage,
             },
           }));
-          console.log("pegando do localStorage: ", currentPropertieName);
+          // console.log("pegando do localStorage: ", currentPropertieName);
           continue;
         }
 
